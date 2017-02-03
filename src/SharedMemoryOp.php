@@ -19,8 +19,10 @@
  * @link https://messagemedia.github.io/
  */
 
-require_once('logging/MmLogger.class.php');
-require_once('Packing.class.php');
+namespace MessageMedia\shmop;
+
+require_once('logging/MmLogger.class.php'); ///< @todo Use PSR-3 log interface.
+use \MmLogger as MmLogger;                  ///< @todo Use PSR-3 log interface.
 
 /**
  * @brief   Provides structure for reading and writing to shared memory segments
@@ -101,7 +103,7 @@ require_once('Packing.class.php');
  * @see     http://www.php.net/manual/en/function.pack.php
  * @see     http://www.php.net/manual/en/function.unpack.php
  */
-abstract class SharedMemoryOp extends stdClass {
+abstract class SharedMemoryOp {
 
     const MODE_READ_ONLY  = 'r';                     ///< Open shared memory segments for reading only.
     const MODE_READ_WRITE = 'w';                     ///< Open shared memory segments for reading and writing.

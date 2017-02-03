@@ -19,7 +19,12 @@
  * @link https://messagemedia.github.io/
  */
 
-require_once('SharedMemoryOp.class.php');
+namespace MessageMedia\shmop\metrics;
+
+require_once('logging/MmLogger.class.php'); ///< @todo Use PSR-3 log interface.
+use \MmLogger as MmLogger;                  ///< @todo Use PSR-3 log interface.
+use MessageMedia\shmop\Packing;
+use MessageMedia\shmop\SharedMemoryOp;
 
 /**
  * @brief  Provides a structure for implementing counter and timer style application

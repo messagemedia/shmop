@@ -19,6 +19,8 @@
  * @link https://messagemedia.github.io/
  */
 
+namespace MessageMedia\shmop;
+
 /**
  * @brief   A simple class with methods for working with PHP's pack and unpack functions.
  *
