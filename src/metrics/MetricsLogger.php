@@ -539,7 +539,11 @@ abstract class MetricsLogger extends SharedMemoryOp
                         $head['nextIndexOffset'],
                         $head['nextDataOffset']
                     );
-                    $packedOffsetDataBytesWritten = shmop_write($this->shmIndexId, $packedOffsetData, 4);
+                    $packedOffsetDataBytesWritten = shmop_write(
+                        $this->shmIndexId,
+                        $packedOffsetData,
+                        Packing::getPackLength($this->versionStructure)
+                    );
                     if ($packedOffsetDataBytesWritten == Packing::getPackLength($this->offsetsStructure)) {
                         flock($fp, LOCK_UN);
                         fclose($fp);
