@@ -21,9 +21,6 @@
 
 namespace MessageMedia\shmop;
 
-require_once('logging/MmLogger.class.php'); ///< @todo Use PSR-3 log interface.
-use \MmLogger as MmLogger;                  ///< @todo Use PSR-3 log interface.
-
 /**
  * @brief   Provides structure for reading and writing to shared memory segments
  *          using PHPs shmop_* functions.
@@ -103,7 +100,9 @@ use \MmLogger as MmLogger;                  ///< @todo Use PSR-3 log interface.
  * @see     http://www.php.net/manual/en/function.pack.php
  * @see     http://www.php.net/manual/en/function.unpack.php
  */
-abstract class SharedMemoryOp {
+abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
+
+    use \Psr\Log\LoggerAwareTrait;                   ///< Implements Psr\Log\LoggerAwareInterface.
 
     const MODE_READ_ONLY  = 'r';                     ///< Open shared memory segments for reading only.
     const MODE_READ_WRITE = 'w';                     ///< Open shared memory segments for reading and writing.
@@ -128,7 +127,6 @@ abstract class SharedMemoryOp {
     protected $ipcKeyFile      = false;              ///< Path to file used when creating System V IPC Key.
     protected $hasError        = false;              ///< Flag any permanent errors.
     protected $readOnly        = false;              ///< Open shared memory segments as read only.
-    protected $developmentMode = false;              ///< Flag to enable development mode, which turns on metric validation, and duplicate metric warnings.
 
     protected $versionStructure = array( ///< Structure of the version stored in the head of the index segment.
                                          ///  @see http://php.net/manual/en/function.pack.php.
@@ -161,9 +159,11 @@ abstract class SharedMemoryOp {
             $this->readOnly = true;
         }
 
+        $this->setLogger(new \Psr\Log\NullLogger());
+
         if (!$this->initializeSharedMemorySegment()) {
             $this->hasError = true;
-            MmLogger::log('Failed to initialize shared memory segment ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('Failed to initialize shared memory segment ' . $this->ipcKeyFile);
         }
     }
 
@@ -190,7 +190,7 @@ abstract class SharedMemoryOp {
     protected function initializeSharedMemorySegment() {
         if (!extension_loaded('shmop')) {
             $this->hasError = true;
-            MmLogger::log('shmop does not exist', basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('shmop extension not loaded');
             return false;
         }
 
@@ -200,12 +200,12 @@ abstract class SharedMemoryOp {
                     touch($this->ipcKeyFile);
                 } catch (Exception $e) {
                     $this->hasError = true;
-                    MmLogger::log('Failed to touch ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                    $this->logger->error('Failed to touch ' . $this->ipcKeyFile);
                     return false;
                 }
             } else {
                 $this->hasError = true;
-                MmLogger::log('File does not exist ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                $this->logger->error('File does not exist ' . $this->ipcKeyFile);
                 return false;
             }
         }
@@ -232,7 +232,7 @@ abstract class SharedMemoryOp {
                             fclose($ipcKeyFileHandle);
                             return true;
                         } else {
-                            MmLogger::log('Failed to obtain a lock on ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                            $this->logger->error('Failed to obtain a lock on ' . $this->ipcKeyFile);
                         }
                     } else {
                         return true;
@@ -240,10 +240,10 @@ abstract class SharedMemoryOp {
                 }
             } catch (Exception $e) {
                 // Let any exceptions fall through, and close the file
-                MmLogger::log($e->getMessage(), basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                $this->logger->error($e->getMessage());
             }
         } else {
-            MmLogger::log('Failed to open ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('Failed to open ' . $this->ipcKeyFile);
         }
         if ($this->shmIndexId !== false) {
             shmop_close($this->shmIndexId);
@@ -273,15 +273,13 @@ abstract class SharedMemoryOp {
             $mode = ($this->readOnly) ? 'a' : 'w';
             @$shmId = shmop_open($key, $mode, 0, 0);
             if ($shmId !== false) {
-                if ($this->developmentMode) {
-                    MmLogger::log('Opened shared memory segment 0x' . dechex($key), basename(__FILE__), __LINE__, __FUNCTION__, LOG_INFO);
-                }
+                $this->logger->debug('Opened shared memory segment 0x' . dechex($key));
                 return $shmId;
             } else {
                 if (!$this->readOnly) {
                     $shmId = shmop_open($key, 'c', self::SHARED_MEMORY_MODE, $pages * self::PAGE_SIZE);
                     if ($shmId !== false) {
-                        MmLogger::log('Created and opened shared memory segment 0x' . dechex($key), basename(__FILE__), __LINE__, __FUNCTION__, LOG_INFO);
+                        $this->logger->info('Created and opened shared memory segment 0x' . dechex($key));
                         return $shmId;
                     }
                 }

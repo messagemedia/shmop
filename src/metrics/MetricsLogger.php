@@ -21,8 +21,6 @@
 
 namespace MessageMedia\shmop\metrics;
 
-require_once('logging/MmLogger.class.php'); ///< @todo Use PSR-3 log interface.
-use \MmLogger as MmLogger;                  ///< @todo Use PSR-3 log interface.
 use MessageMedia\shmop\Packing;
 use MessageMedia\shmop\SharedMemoryOp;
 
@@ -255,7 +253,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
             if ($config['type'] == self::METRIC_TYPE_COUNTER) {
                 $keyName = $config['name'];
                 if ($this->developmentMode && isset($parsedMetrics[$keyName])) {
-                    MmLogger::log('Duplicate key name for ' . $keyName, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+                    $this->logger->warning('Duplicate key name for ' . $keyName);
                 }
                 $parsedMetrics[$keyName] = array(
                     'flags'        => 0,
@@ -268,7 +266,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
                 foreach ($this->timingMetrics as $metric => $type) {
                     $keyName = $config['name'] . '.' . $metric;
                     if ($this->developmentMode && isset($parsedMetrics[$keyName])) {
-                        MmLogger::log('Duplicate key name for ' . $keyName, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+                        $this->logger->warning('Duplicate key name for ' . $keyName);
                     }
                     $parsedMetrics[$keyName] = array(
                         'flags'        => 0,
@@ -315,46 +313,46 @@ abstract class MetricsLogger extends SharedMemoryOp {
             self::METRIC_TYPE_COUNTER,
             self::METRIC_TYPE_TIMER,
         ))) {
-            MmLogger::log('Missing or invalid type property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Missing or invalid type property, ignoring metric at index ' . $index);
             return false;
         }
 
         // All metrics must have a name
         if (!isset($config['name']) || !is_string($config['name'])) {
-            MmLogger::log('Missing name property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Missing name property, ignoring metric at index ' . $index);
             return false;
         }
 
         // All metrics must have a pcp_cluster property
         if (!isset($config['pcp_cluster']) || !is_int($config['pcp_cluster'])) {
-            MmLogger::log('Missing or invalid pcp_cluster property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Missing or invalid pcp_cluster property, ignoring metric at index ' . $index);
             return false;
         }
 
         if ($config['type'] != self::METRIC_TYPE_TIMER) {
             // Only timers don't require a pcp_item property
             if (!isset($config['pcp_item']) || !is_int($config['pcp_item'])) {
-                MmLogger::log('Missing or invalid pcp_item property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+                $this->logger->warning('Missing or invalid pcp_item property, ignoring metric at index ' . $index);
                 return false;
             }
         }
 
         if ($config['pcp_cluster'] < 0 || $config['pcp_cluster'] > 65535) { // Max UINT16
-            MmLogger::log('Out of range pcp_cluster property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Out of range pcp_cluster property, ignoring metric at index ' . $index);
             return false;
         }
         if ($config['pcp_item'] < 0 || $config['pcp_item'] > 65535) { // Max UINT16
-            MmLogger::log('Out of range pcp_item property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Out of range pcp_item property, ignoring metric at index ' . $index);
             return false;
         }
         if ($config['pcp_instance'] < -2147483648 || $config['pcp_instance'] > 2147483647) { // Max INT32
-            MmLogger::log('Out of range pcp_instance property, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Out of range pcp_instance property, ignoring metric at index ' . $index);
             return false;
         }
 
         $pcpHash = md5($config['pcp_cluster'] . $config['pcp_item'] . $config['pcp_instance']);
         if (in_array($pcpHash, $pcpHashes)) {
-            MmLogger::log('Duplicate PCP ID, ignoring metric at index ' . $index, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Duplicate PCP ID, ignoring metric at index ' . $index);
             return false;
         } else {
             $pcpHashes[] = $pcpHash;
@@ -371,7 +369,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
      */
     protected function findValueWithLock($name) {
         if (!isset($this->metrics[$name])) {
-            MmLogger::log('Attempted to find undefined metric ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Attempted to find undefined metric ' . $name);
             return false;
         }
 
@@ -384,16 +382,16 @@ abstract class MetricsLogger extends SharedMemoryOp {
                     fclose($fp);
                     return $valueFound;
                 } else {
-                    MmLogger::log('Failed to obtain a lock on ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                    $this->logger->error('Failed to obtain a lock on ' . $this->ipcKeyFile);
                 }
             } catch (Exception $e) {
                 // Let any exceptions fall through, unlock and close the file
-                MmLogger::log($e->getMessage(), basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                $this->logger->error($e->getMessage());
             }
             flock($fp, LOCK_UN);
             fclose($fp);
         } else {
-            MmLogger::log('Failed to open ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('Failed to open ' . $this->ipcKeyFile);
         }
         return false;
     }
@@ -444,7 +442,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
      */
     protected function addNewValue($name) {
         if (!isset($this->metrics[$name])) {
-            MmLogger::log('Attempted to add undefined metric ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Attempted to add undefined metric ' . $name);
             return false;
         }
 
@@ -462,13 +460,13 @@ abstract class MetricsLogger extends SharedMemoryOp {
                     $indexStructureLength = Packing::getPackLength($this->indexStructure);
 
                     if (shmop_size($this->shmIndexId) < $head['nextIndexOffset'] + $indexStructureLength) {
-                        MmLogger::log('Index shared memory segment full, cannot add ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                        $this->logger->error('Index shared memory segment full, cannot add ' . $name);
                         return false;
                     }
 
                     $newValueLength = Packing::getTypeLength($this->metrics[$name]['type']);
                     if (shmop_size($this->shmDataId) < $head['nextDataOffset'] + $newValueLength) {
-                        MmLogger::log('Data shared memory segment full, cannot add ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                        $this->logger->error('Data shared memory segment full, cannot add ' . $name);
                         return false;
                     }
 
@@ -494,12 +492,12 @@ abstract class MetricsLogger extends SharedMemoryOp {
                         $instance
                     );
                     if (strlen($data) != $indexStructureLength) {
-                        MmLogger::log('Incorrect index length ' . strlen($data) . ', length should be ' . $indexStructureLength, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                        $this->logger->error('Incorrect index length ' . strlen($data) . ', length should be ' . $indexStructureLength);
                         return false;
                     }
                     $bytesWritten = shmop_write($this->shmIndexId, $data, $head['nextIndexOffset']);
                     if ($bytesWritten != $indexStructureLength) {
-                        MmLogger::log('Incorrect index bytes written ' . $bytesWritten . ', bytes written should be ' . $indexStructureLength, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                        $this->logger->error('Incorrect index bytes written ' . $bytesWritten . ', bytes written should be ' . $indexStructureLength);
                         return false;
                     }
 
@@ -517,16 +515,16 @@ abstract class MetricsLogger extends SharedMemoryOp {
                         return true;
                     }
                 } else {
-                    MmLogger::log('Failed to obtain a lock on ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                    $this->logger->error('Failed to obtain a lock on ' . $this->ipcKeyFile);
                 }
             } catch (Exception $e) {
                 // Let any exceptions fall through, unlock and close the file
-                MmLogger::log($e->getMessage(), basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+                $this->logger->error($e->getMessage());
             }
             flock($fp, LOCK_UN);
             fclose($fp);
         } else {
-            MmLogger::log('Failed to open ' . $this->ipcKeyFile, basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('Failed to open ' . $this->ipcKeyFile);
         }
         return false;
     }
@@ -543,16 +541,16 @@ abstract class MetricsLogger extends SharedMemoryOp {
         if (is_numeric($value)) {
             // Ensure integers don't exceed their limit and convert to doubles.
             if ($this->metrics[$name]['type'] == Packing::UINT32 && ($value >= min(PHP_INT_MAX, 4294967295) || !is_int($value))) {
-                MmLogger::log('Wrapping value for ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+                $this->logger->notice('Wrapping value for ' . $name);
                 $value = 0;
             }
             // Ensure all metrics are positive numbers.
             if ($value < 0) {
-                MmLogger::log('Ignoring / resetting negative value ' . $value . ' for ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+                $this->logger->warning('Ignoring / resetting negative value ' . $value . ' for ' . $name);
                 $value = 0;
             }
         } else {
-            MmLogger::log('Ignoring / resetting non numeric value ' . $value . ' for ' . $name, basename(__FILE__), __LINE__, __FUNCTION__, LOG_WARNING);
+            $this->logger->warning('Ignoring / resetting non numeric value ' . $value . ' for ' . $name);
             $value = 0;
         }
     }
@@ -609,7 +607,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
      */
     public function __set($name, $value) {
         if ($this->readOnly) {
-            MmLogger::log('Attempted to write in read only mode', basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('Attempted to write in read only mode');
         }
         if ($this->hasError) {
             return;
@@ -677,7 +675,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
      */
     public function timing($key, $timeTaken) {
         if ($this->readOnly) {
-            MmLogger::log('Attempted to write in read only mode', basename(__FILE__), __LINE__, __FUNCTION__, LOG_ERR);
+            $this->logger->error('Attempted to write in read only mode');
         }
         if ($this->hasError) {
             return;
