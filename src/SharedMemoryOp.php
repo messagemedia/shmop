@@ -37,8 +37,8 @@ namespace MessageMedia\shmop;
  *
  * Derived classes should implement the following functionality:
  *
- * - An index strucutre which creates a unique identifier for a data item to be
- *   stored, that items offset (in bytes) in the data segment, the type of data
+ * - An index structure which creates a unique identifier for a data item to be
+ *   stored, that item's offset (in bytes) in the data segment, the type of data
  *   being stored and its length. For example, an index may has a structrue:
  *     name (char)
  *     type (char)
@@ -101,7 +101,8 @@ namespace MessageMedia\shmop;
  * @see     http://www.php.net/manual/en/function.pack.php
  * @see     http://www.php.net/manual/en/function.unpack.php
  */
-abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
+abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface
+{
 
     use \Psr\Log\LoggerAwareTrait;                   // Implements \Psr\Log\LoggerAwareInterface.
 
@@ -111,7 +112,7 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
     const IPC_KEY_FILE_PATH          = '/var/tmp/';  ///< Path to use when creating System V IPC key.
                                                      ///  Must match the corresponding PMDA implementation.
     const PAGE_SIZE = 4096;                          ///< Page size used on most MessageMedia production servers.
-    const LOCK_WAIT_TIMEOUT = 100;                   ///< Default time in milliseconds to wait before failing to obtain a lock.
+    const LOCK_WAIT_TIMEOUT = 100;                   ///< Default maximum time, in milliseconds, to wait for a lock.
 
     const FTOK_PROJECT_INDEX_IDENTIFIER = 'i';       ///< ftok project identifier for index segment.
     const FTOK_PROJECT_DATA_IDENTIFIER = 'd';        ///< ftok project identifier for data segment.
@@ -121,13 +122,13 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
     protected $name       = '';                      ///< Name for the shared memory segment.
     protected $identifier = '';                      ///< A secondary identifier to be used with the $name.
 
-    protected $shmIndexId      = false;              ///< Shared memory ID for the index returned by shmop_open().
-    protected $shmDataId       = false;              ///< Shared memory ID for the data returned by shmop_open().
-    protected $shmIndexPages   = 1;                  ///< Number of pages to reserve for index shared memory segment on creation.
-    protected $shmDataPages    = 1;                  ///< Number of pages to reserve for data shared memory segment on creation.
-    protected $ipcKeyFile      = false;              ///< Path to file used when creating System V IPC Key.
-    protected $hasError        = false;              ///< Flag any permanent errors.
-    protected $readOnly        = false;              ///< Open shared memory segments as read only.
+    protected $shmIndexId      = false; ///< Shared memory ID for the index returned by shmop_open().
+    protected $shmDataId       = false; ///< Shared memory ID for the data returned by shmop_open().
+    protected $shmIndexPages   = 1;     ///< Number of pages to reserve for index shared memory segment on creation.
+    protected $shmDataPages    = 1;     ///< Number of pages to reserve for data shared memory segment on creation.
+    protected $ipcKeyFile      = false; ///< Path to file used when creating System V IPC Key.
+    protected $hasError        = false; ///< Flag any permanent errors.
+    protected $readOnly        = false; ///< Open shared memory segments as read only.
 
     /// Structure of the version stored in the head of the index segment.
     /// @see http://php.net/manual/en/function.pack.php.
@@ -153,7 +154,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      * @param   $version        The version of the data structure being stored.
      * @param   $mode           Mode to open shared memory segments in, defaults to read and write.
      */
-    public function __construct($name, $identifier, $version, $mode = self::MODE_READ_WRITE) {
+    public function __construct($name, $identifier, $version, $mode = self::MODE_READ_WRITE)
+    {
         $this->name       = $name;
         $this->version    = $version;
         $this->identifier = $identifier;
@@ -173,12 +175,12 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
     /**
      * @brief   Derived classes must implement a getter function.
      */
-    public abstract function __get($name);
+    abstract public function __get($name);
 
     /**
      * @brief   Derived classes must implement a setter function.
      */
-    public abstract function __set($name, $value);
+    abstract public function __set($name, $value);
 
     /**
      * @brief   Initializes a shared memory segment.
@@ -190,7 +192,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @return  True on successful initialization, false otherwise.
      */
-    protected function initializeSharedMemorySegment() {
+    protected function initializeSharedMemorySegment()
+    {
         if (!extension_loaded('shmop')) {
             $this->hasError = true;
             $this->logger->error('shmop extension not loaded');
@@ -217,7 +220,7 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
         if ($ipcKeyFileHandle !== false) {
             try {
                 $this->shmIndexId = $this->openOrCreate(self::FTOK_PROJECT_INDEX_IDENTIFIER, $this->shmIndexPages);
-                $this->shmDataId  = $this->openOrCreate(self::FTOK_PROJECT_DATA_IDENTIFIER,  $this->shmDataPages);
+                $this->shmDataId  = $this->openOrCreate(self::FTOK_PROJECT_DATA_IDENTIFIER, $this->shmDataPages);
                 if ($this->shmIndexId !== false && $this->shmDataId !== false) {
                     $head = $this->getHead();
                     if (!$this->readOnly && ($head['version'] == 0 || $head['version'] < $this->version)) {
@@ -225,8 +228,13 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
                             $head = $this->getHead();
                             if ($head['version'] == 0) {
                                 // Set the version if not already set.
-                                $data = pack(Packing::getPackFormat('head', $this->getHeadStructure()), $this->version, Packing::getPackLength($this->getHeadStructure()), 0);
-                            } else if ($head['version'] < $this->version) {
+                                $data = pack(
+                                    Packing::getPackFormat('head', $this->getHeadStructure()),
+                                    $this->version,
+                                    Packing::getPackLength($this->getHeadStructure()),
+                                    0
+                                );
+                            } elseif ($head['version'] < $this->version) {
                                 // Upgrade the version if an older version exists.
                                 $data = pack($this->versionStructure['version'], $this->version);
                             }
@@ -270,7 +278,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @return  An shared memory segment ID on success, false otherwise.
      */
-    protected function openOrCreate($projectIdentifier, $pages) {
+    protected function openOrCreate($projectIdentifier, $pages)
+    {
         $key = ftok($this->ipcKeyFile, $projectIdentifier);
         if (is_long($key) && $key != -1) {
             $mode = ($this->readOnly) ? 'a' : 'w';
@@ -298,29 +307,35 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      * @return  Associative array containing version, nextIndexOffset and nextDataOffset
      *          from the index shared memory segment.
      */
-    protected function getHead() {
-        return unpack(Packing::getPackFormat('head', $this->getHeadStructure(), true), shmop_read($this->shmIndexId, 0, Packing::getPackLength($this->getHeadStructure())));
+    protected function getHead()
+    {
+        return unpack(
+            Packing::getPackFormat('head', $this->getHeadStructure(), true),
+            shmop_read($this->shmIndexId, 0, Packing::getPackLength($this->getHeadStructure()))
+        );
     }
 
     /**
      * @brief   Returns the head structure of the index
      */
-    protected function getHeadStructure() {
+    protected function getHeadStructure()
+    {
         return array_merge($this->versionStructure, $this->offsetsStructure);
     }
 
     /**
      * @brief   Deletes the shared memory segements.
      */
-    public function deleteSharedMemory($deleteKeyFile = true) {
+    public function deleteSharedMemory($deleteKeyFile = true)
+    {
         if ($this->shmIndexId !== false) {
             shmop_delete($this->shmIndexId);
-            shmop_close( $this->shmIndexId);
+            shmop_close($this->shmIndexId);
             $this->shmIndexId = false;
         }
         if ($this->shmDataId !== false) {
             shmop_delete($this->shmDataId);
-            shmop_close( $this->shmDataId);
+            shmop_close($this->shmDataId);
             $this->shmDataId = false;
         }
         if (file_exists($this->ipcKeyFile) && $deleteKeyFile) {
@@ -333,7 +348,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @return  True if hasError is true, false otherwise.
      */
-    public function isError() {
+    public function isError()
+    {
         return $this->hasError;
     }
 
@@ -342,7 +358,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @return  $name property.
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -351,7 +368,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @return  $identifier property.
      */
-    public function getidentifier() {
+    public function getidentifier()
+    {
         return $this->identifier;
     }
 
@@ -360,7 +378,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @return  $ipcKeyFile property.
      */
-    public function getIpcKeyFile() {
+    public function getIpcKeyFile()
+    {
         return $this->ipcKeyFile;
     }
 
@@ -376,7 +395,8 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
      *
      * @todo    Find a better location for this, a FileUtils class or something similar.
      */
-    protected function getLock(&$fp, $lock, $timeout = self::LOCK_WAIT_TIMEOUT) {
+    protected function getLock(&$fp, $lock, $timeout = self::LOCK_WAIT_TIMEOUT)
+    {
         // Validate lock type
         if ($lock != LOCK_EX && $lock != LOCK_SH) {
             return false;

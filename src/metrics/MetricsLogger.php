@@ -168,16 +168,22 @@ use MessageMedia\shmop\SharedMemoryOp;
  * @see     api/xml/SoapXmlMetricsLogger.class.php, an implementation of MetricsLogger.
  * @see     http://oss.sgi.com/projects/pcp/
  */
-abstract class MetricsLogger extends SharedMemoryOp {
+abstract class MetricsLogger extends SharedMemoryOp
+{
 
     const INSTANCE_DOMAIN_NULL = -1; ///< Value to use as the pcp_instance when a metric has no instance domain.
 
     const METRIC_TYPE_COUNTER = 'counter'; ///< monotonic counter.
     const METRIC_TYPE_TIMER   = 'timer';   ///< interval timer.
 
-    protected $metrics         = array(); ///< Array of metrics to be captured by this class.
-    protected $indexData       = array(); ///< Array of value names and with their offset and pack type. Can also include flags and length of each value.
-    protected $developmentMode = false;   ///< Flag to enable development mode, which turns on metric validation, and duplicate metric warnings.
+    ///< Array of metrics to be captured by this class.
+    protected $metrics = array();
+
+    ///< Array of value names and with their offset and pack type. Can also include flags and length of each value.
+    protected $indexData = array();
+
+    ///< Flag to enable development mode, which turns on metric validation, and duplicate metric warnings.
+    protected $developmentMode = false;
 
     /// Array or timing metrics to collect.
     protected $timingMetrics = array(
@@ -218,13 +224,20 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * @param   $mode     The mode in which this class should operate, read and write or read only.
      * @param   $developmentMode Flag to enable development mode.
      */
-    public function __construct($name, $metrics, $version, $mode = SharedMemoryOp::MODE_READ_WRITE, $developmentMode = false) {
+    public function __construct(
+        $name,
+        $metrics,
+        $version,
+        $mode = SharedMemoryOp::MODE_READ_WRITE,
+        $developmentMode = false
+    ) {
         $this->developmentMode = $developmentMode;
         $this->metrics         = $this->parseMetrics($metrics);
 
-        $metricsCount = count($this->metrics) * 4; /// Allowing for a 4 fold increase in amount of metrics.
-        $this->shmIndexPages = ceil((12 + ($metricsCount * 16)) / self::PAGE_SIZE); /// 12 bytes for head segment, 16 bytes for each metric index.
-        $this->shmDataPages  = ceil(($metricsCount * 4) / self::PAGE_SIZE); /// 4 bytes for each metric.
+        $metricsCount = count($this->metrics) * 4; // Allowing for a 4-fold increase in amount of metrics.
+        $this->shmIndexPages = ceil((12 + ($metricsCount * 16)) / self::PAGE_SIZE); // 12 bytes for head segment, and
+                                                                                    // 16 bytes for each metric index.
+        $this->shmDataPages  = ceil(($metricsCount * 4) / self::PAGE_SIZE); // 4 bytes for each metric.
 
         parent::__construct($name, 'metrics', $version, $mode);
     }
@@ -244,7 +257,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  Associative array of metrics to IDs.
      */
-    protected function parseMetrics($metrics) {
+    protected function parseMetrics($metrics)
+    {
         $parsedMetrics = array();
         if ($this->developmentMode) {
             $pcpHashes = array(); ///< Used to check for duplicate PCP IDs.
@@ -265,7 +279,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
                     'pcp_item'     => $config['pcp_item'],
                     'pcp_instance' => $config['pcp_instance'],
                 );
-            } else if ($config['type'] == self::METRIC_TYPE_TIMER) {
+            } elseif ($config['type'] == self::METRIC_TYPE_TIMER) {
                 foreach ($this->timingMetrics as $metric => $type) {
                     $keyName = $config['name'] . '.' . $metric;
                     if ($this->developmentMode && isset($parsedMetrics[$keyName])) {
@@ -310,7 +324,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  True if valid, false otherwise.
      */
-    protected function validateMetricConfig($index, $config, &$pcpHashes) {
+    protected function validateMetricConfig($index, $config, &$pcpHashes)
+    {
         // Metric must have a valid type
         if (!isset($config['type']) || !in_array($config['type'], array(
             self::METRIC_TYPE_COUNTER,
@@ -370,7 +385,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  True if value found, false otherwise.
      */
-    protected function findValueWithLock($name) {
+    protected function findValueWithLock($name)
+    {
         if (!isset($this->metrics[$name])) {
             $this->logger->warning('Attempted to find undefined metric ' . $name);
             return false;
@@ -410,7 +426,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  True if value found, false otherwise.
      */
-    protected function findValue($name) {
+    protected function findValue($name)
+    {
         $cluster  = $this->metrics[$name]['pcp_cluster'];
         $item     = $this->metrics[$name]['pcp_item'];
         $instance = $this->metrics[$name]['pcp_instance'];
@@ -420,12 +437,11 @@ abstract class MetricsLogger extends SharedMemoryOp {
         $indexStructureLength = Packing::getPackLength($this->indexStructure);
 
         for ($indexOffset = $headStructureLength; $indexOffset < $head['nextIndexOffset']; $indexOffset += $indexStructureLength) {
-            $data = unpack(Packing::getPackFormat('index', $this->indexStructure, true), shmop_read($this->shmIndexId, $indexOffset, $indexStructureLength));
-            if (
-                ($data['cluster']  == $cluster) &&
-                ($data['item']     == $item)    &&
-                ($data['instance'] == $instance)
-            ) {
+            $data = unpack(
+                Packing::getPackFormat('index', $this->indexStructure, true),
+                shmop_read($this->shmIndexId, $indexOffset, $indexStructureLength)
+            );
+            if (($data['cluster'] == $cluster) && ($data['item'] == $item) && ($data['instance'] == $instance)) {
                 $this->indexData[$name]['offset'] = $data['offset'];
                 return true;
             }
@@ -443,7 +459,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  True if added, false otherwise.
      */
-    protected function addNewValue($name) {
+    protected function addNewValue($name)
+    {
         if (!isset($this->metrics[$name])) {
             $this->logger->warning('Attempted to add undefined metric ' . $name);
             return false;
@@ -486,8 +503,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
                     // Write the new item into the index.
                     $data = pack(
                         Packing::getPackFormat('index', $this->indexStructure),
-                        $flags,          ///< Order of parameters must match order in $this->indexStrucutre
-                        ord($type),      ///< @todo Find a way to have these passed in, the same order as the $this->indexStrucutre
+                        $flags,     ///< Order of parameters must match order in $this->indexStrucutre
+                        ord($type), ///< @todo Find a way to pass these in the same order as $this->indexStrucutre
                         $newValueLength,
                         $head['nextDataOffset'],
                         $cluster,
@@ -495,12 +512,17 @@ abstract class MetricsLogger extends SharedMemoryOp {
                         $instance
                     );
                     if (strlen($data) != $indexStructureLength) {
-                        $this->logger->error('Incorrect index length ' . strlen($data) . ', length should be ' . $indexStructureLength);
+                        $this->logger->error(
+                            'Incorrect index length ' . strlen($data) . ', length should be ' . $indexStructureLength
+                        );
                         return false;
                     }
                     $bytesWritten = shmop_write($this->shmIndexId, $data, $head['nextIndexOffset']);
                     if ($bytesWritten != $indexStructureLength) {
-                        $this->logger->error('Incorrect index bytes written ' . $bytesWritten . ', bytes written should be ' . $indexStructureLength);
+                        $this->logger->error(
+                            'Incorrect index bytes written ' . $bytesWritten . ', bytes written should be ' .
+                            $indexStructureLength
+                        );
                         return false;
                     }
 
@@ -512,7 +534,13 @@ abstract class MetricsLogger extends SharedMemoryOp {
                     // Write the new offsets to the index segment.
                     $head['nextIndexOffset'] += $bytesWritten;
                     $head['nextDataOffset'] += $newValueLength;
-                    if (shmop_write($this->shmIndexId, pack(Packing::getPackFormat('offset', $this->offsetsStructure), $head['nextIndexOffset'], $head['nextDataOffset']), 4) == Packing::getPackLength($this->offsetsStructure)) {
+                    $packedOffsetData = pack(
+                        Packing::getPackFormat('offset', $this->offsetsStructure),
+                        $head['nextIndexOffset'],
+                        $head['nextDataOffset']
+                    );
+                    $packedOffsetDataBytesWritten = shmop_write($this->shmIndexId, $packedOffsetData, 4);
+                    if ($packedOffsetDataBytesWritten == Packing::getPackLength($this->offsetsStructure)) {
                         flock($fp, LOCK_UN);
                         fclose($fp);
                         return true;
@@ -539,7 +567,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * @param   $name     Name of the value to validate.
      * @param   $value    The value to validate.
      */
-    protected function validateValue(&$value, $name) {
+    protected function validateValue(&$value, $name)
+    {
         // All metrics should be numeric.
         if (is_numeric($value)) {
             // Ensure integers don't exceed their limit and convert to doubles.
@@ -572,7 +601,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *          array, false if it doens't exist or the shared memory segment
      *          cannot be accessed or read from.
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         if ($this->hasError) {
             return false;
         }
@@ -591,7 +621,14 @@ abstract class MetricsLogger extends SharedMemoryOp {
             }
             return false;
         }
-        $data = unpack("{$this->metrics[$name]['type']}value", shmop_read($this->shmDataId, $this->indexData[$name]['offset'], Packing::getTypeLength($this->metrics[$name]['type'])));
+        $data = unpack(
+            "{$this->metrics[$name]['type']}value",
+            shmop_read(
+                $this->shmDataId,
+                $this->indexData[$name]['offset'],
+                Packing::getTypeLength($this->metrics[$name]['type'])
+            )
+        );
         return $data['value'];
     }
 
@@ -608,7 +645,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * @param   $name     Name of the value to set.
      * @param   $value    The value to set.
      */
-    public function __set($name, $value) {
+    public function __set($name, $value)
+    {
         if ($this->readOnly) {
             $this->logger->error('Attempted to write in read only mode');
         }
@@ -639,7 +677,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * @param   $key    Key to increment.
      * @param   $value  Value to increment by, defaults to 1.
      */
-    public function increment($key, $value = 1) {
+    public function increment($key, $value = 1)
+    {
         $this->__set($key, $this->__get($key) + $value);
     }
 
@@ -649,7 +688,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * @param   $key    Key to set.
      * @param   $value  Value to set.
      */
-    public function set($key, $value) {
+    public function set($key, $value)
+    {
         $this->__set($key, $value);
     }
 
@@ -660,7 +700,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  Value for key.
      */
-    public function get($key) {
+    public function get($key)
+    {
         return $this->__get($key);
     }
 
@@ -676,7 +717,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * @param   $key        Key to update metrics for
      * @param   $timeTaken  Duration for the event in milliseconds
      */
-    public function timing($key, $timeTaken) {
+    public function timing($key, $timeTaken)
+    {
         if ($this->readOnly) {
             $this->logger->error('Attempted to write in read only mode');
         }
@@ -712,7 +754,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  Associative array of all metrics, or false on error.
      */
-    public function getAllMetrics() {
+    public function getAllMetrics()
+    {
         $metrics = array();
         foreach ($this->metrics as $metric => $id) {
             $metrics[$metric] = $this->$metric;
@@ -723,7 +766,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
     /**
      * @brief   Set the value of all metrics to 0.
      */
-    public function clearAllMetrics() {
+    public function clearAllMetrics()
+    {
         foreach ($this->metrics as $metric => $id) {
             $this->$metric = 0;
         }
@@ -734,7 +778,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *
      * @return  Associative array of metric keys and IDs
      */
-    public function getMetrics() {
+    public function getMetrics()
+    {
         return $this->metrics;
     }
 }

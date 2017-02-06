@@ -28,7 +28,8 @@ namespace MessageMedia\shmop;
  * @see http://php.net/manual/en/function.pack.php
  * @see http://php.net/manual/en/function.unpack.php
  */
-class Packing {
+class Packing
+{
 
     const UINT16 = 'S'; ///< unsigned short (always 16 bit, machine byte order)
     const INT16  = 's'; ///< signed short (always 16 bit, machine byte order)
@@ -51,15 +52,23 @@ class Packing {
      *
      * @todo    Add other types listed on http://php.net/manual/en/function.pack.php
      */
-    public static function getTypeLength($type) {
+    public static function getTypeLength($type)
+    {
         switch ($type) {
-            case self::CHAR:   return 1;
-            case self::UCHAR:  return 1;
-            case self::INT16:  return 2;
-            case self::UINT16: return 2;
-            case self::INT32:  return 4;
-            case self::UINT32: return 4;
-            default: return 0;
+            case self::CHAR:
+                return 1;
+            case self::UCHAR:
+                return 1;
+            case self::INT16:
+                return 2;
+            case self::UINT16:
+                return 2;
+            case self::INT32:
+                return 4;
+            case self::UINT32:
+                return 4;
+            default:
+                return 0;
         }
     }
 
@@ -75,7 +84,8 @@ class Packing {
      *
      * @see     http://php.net/manual/en/function.pack.php
      */
-    public static function getPackLength($structure) {
+    public static function getPackLength($structure)
+    {
         $length = 0;
         foreach ($structure as $type) {
             $length += self::getTypeLength($type);
@@ -104,7 +114,8 @@ class Packing {
      * @see     http://php.net/manual/en/function.pack.php
      * @see     http://php.net/manual/en/function.unpack.php
      */
-    public static function getPackFormat($id, $structure, $named = false) {
+    public static function getPackFormat($id, $structure, $named = false)
+    {
         if (isset(self::$packFormats[$id][$named])) {
             return self::$packFormats[$id][$named];
         }

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="shmop">
+    <description>The coding standard for MessageMedia/shmop.</description>
+    <file>src</file>
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+    <!-- @todo Add PSR-5 and PSR-12 once accepted (both in draft currently) -->
+</ruleset>
