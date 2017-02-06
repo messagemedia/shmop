@@ -6,6 +6,9 @@
     "require": {
         "psr/log": "*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
     "autoload": {
         "psr-4": {
             "MessageMedia\\shmop\\": "src"

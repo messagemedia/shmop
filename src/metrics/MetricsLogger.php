@@ -301,13 +301,13 @@ abstract class MetricsLogger extends SharedMemoryOp {
      * this function is only used in development mode.
      *
      * @param   $index      Index of the item, used for logging warnings.
-     * @param   $config     Associative array of config values, passed by reference.
+     * @param   $config     Associative array of config values.
      * @param   $pcpHashes  Array of hash PCP metrics, used to identify duplicates,
      *                      passed by reference.
      *
      * @return  True if valid, false otherwise.
      */
-    protected function validateMetricConfig($index, &$config, &$pcpHashes) {
+    protected function validateMetricConfig($index, $config, &$pcpHashes) {
         // Metric must have a valid type
         if (!isset($config['type']) || !in_array($config['type'], array(
             self::METRIC_TYPE_COUNTER,
@@ -550,7 +550,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
                 $value = 0;
             }
         } else {
-            $this->logger->warning('Ignoring / resetting non numeric value ' . $value . ' for ' . $name);
+            $this->logger->warning('Ignoring / resetting non numeric value ' . print_r($value, true) . ' for ' . $name);
             $value = 0;
         }
     }
