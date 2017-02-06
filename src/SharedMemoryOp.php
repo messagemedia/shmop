@@ -16,7 +16,7 @@
  *
  * @copyright 2013 MessageMedia Group
  * @license https://www.apache.org/licenses/LICENSE-2.0
- * @link https://messagemedia.github.io/
+ * @see https://messagemedia.github.io/
  */
 
 namespace MessageMedia\shmop;
@@ -102,7 +102,7 @@ namespace MessageMedia\shmop;
  */
 abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
 
-    use \Psr\Log\LoggerAwareTrait;                   ///< Implements Psr\Log\LoggerAwareInterface.
+    use \Psr\Log\LoggerAwareTrait;                   // Implements \Psr\Log\LoggerAwareInterface.
 
     const MODE_READ_ONLY  = 'r';                     ///< Open shared memory segments for reading only.
     const MODE_READ_WRITE = 'w';                     ///< Open shared memory segments for reading and writing.
@@ -128,13 +128,15 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
     protected $hasError        = false;              ///< Flag any permanent errors.
     protected $readOnly        = false;              ///< Open shared memory segments as read only.
 
-    protected $versionStructure = array( ///< Structure of the version stored in the head of the index segment.
-                                         ///  @see http://php.net/manual/en/function.pack.php.
+    /// Structure of the version stored in the head of the index segment.
+    ///  @see http://php.net/manual/en/function.pack.php.
+    protected $versionStructure = array(
         'version' => Packing::UINT32,    ///< Version stored as unsigned long.
     );
 
-    protected $offsetsStructure = array(      ///< Structure of the head stored in the index segment.
-                                              ///  @see http://php.net/manual/en/function.pack.php.
+    /// Structure of the head stored in the index segment.
+    /// @see http://php.net/manual/en/function.pack.php.
+    protected $offsetsStructure = array(
         'nextIndexOffset' => Packing::UINT32, ///< Next index offset stored as unsigned long.
         'nextDataOffset'  => Packing::UINT32, ///< Next data offset stored as unsigned long.
     );

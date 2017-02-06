@@ -16,7 +16,7 @@
  *
  * @copyright 2013 MessageMedia Group
  * @license https://www.apache.org/licenses/LICENSE-2.0
- * @link https://messagemedia.github.io/
+ * @see https://messagemedia.github.io/
  */
 
 namespace MessageMedia\shmop;
@@ -30,12 +30,12 @@ namespace MessageMedia\shmop;
 class Packing {
 
     /// @todo Add other types listed on http://php.net/manual/en/function.pack.php
-    const UINT16 = 'S';
-    const INT16  = 's';
-    const UINT32 = 'L';
-    const INT32  = 'l';
-    const UCHAR  = 'C';
-    const CHAR   = 'c';
+    const UINT16 = 'S'; ///< unsigned short (always 16 bit, machine byte order)
+    const INT16  = 's'; ///< signed short (always 16 bit, machine byte order)
+    const UINT32 = 'L'; ///< unsigned long (always 32 bit, machine byte order)
+    const INT32  = 'l'; ///< signed long (always 32 bit, machine byte order)
+    const UCHAR  = 'C'; ///< unsigned char
+    const CHAR   = 'c'; ///< signed char
 
     private static $packFormats = array(); ///< Cache of generated pack formats.
 

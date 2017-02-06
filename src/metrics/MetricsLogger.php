@@ -16,7 +16,7 @@
  *
  * @copyright 2013 MessageMedia Group
  * @license https://www.apache.org/licenses/LICENSE-2.0
- * @link https://messagemedia.github.io/
+ * @see https://messagemedia.github.io/
  */
 
 namespace MessageMedia\shmop\metrics;
@@ -171,14 +171,15 @@ abstract class MetricsLogger extends SharedMemoryOp {
 
     const INSTANCE_DOMAIN_NULL = -1; ///< Value to use as the pcp_instance when a metric has no instance domain.
 
-    const METRIC_TYPE_COUNTER = 'counter';
-    const METRIC_TYPE_TIMER   = 'timer';
+    const METRIC_TYPE_COUNTER = 'counter'; ///< monotonic counter.
+    const METRIC_TYPE_TIMER   = 'timer';   ///< interval timer.
 
     protected $metrics         = array(); ///< Array of metrics to be captured by this class.
     protected $indexData       = array(); ///< Array of value names and with their offset and pack type. Can also include flags and length of each value.
     protected $developmentMode = false;   ///< Flag to enable development mode, which turns on metric validation, and duplicate metric warnings.
 
-    protected $timingMetrics = array(       ///< Array or timing metrics to collect.
+    /// Array or timing metrics to collect.
+    protected $timingMetrics = array(
         'service_time'  => Packing::UINT32, ///< Total time recorded.
         'time_taken_0'  => Packing::UINT32, ///< Number of recorded values < 1 second.
         'time_taken_1'  => Packing::UINT32, ///< Number of recorded values >= 1 second and < 5 seconds.
@@ -189,8 +190,9 @@ abstract class MetricsLogger extends SharedMemoryOp {
         'timings_count' => Packing::UINT32, ///< Count of recorded timing events.
     );
 
-    protected $indexStructure = array( ///< Structure of the data info lists stored in the index segment.
-                                       ///  @see http://php.net/manual/en/function.pack.php.
+    /// Structure of the data info lists stored in the index segment.
+    ///  @see http://php.net/manual/en/function.pack.php.
+    protected $indexStructure = array(
         'flags'    => Packing::UCHAR,  ///< Flags (unused) stored as an unsigned char.
         'type'     => Packing::UCHAR,  ///< Type stored as unsigned char.
         'length'   => Packing::UINT16, ///< Length stored as unsigned short.
@@ -213,7 +215,7 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *                    the data. @see http://linux.die.net/man/3/pmda.
      * @param   $version  The version of the data structure being stored in $keyIds.
      * @param   $mode     The mode in which this class should operate, read and write or read only.
-     * @param   $developementMode Flag to enable development mode.
+     * @param   $developmentMode Flag to enable development mode.
      */
     public function __construct($name, $metrics, $version, $mode = SharedMemoryOp::MODE_READ_WRITE, $developmentMode = false) {
         $this->developmentMode = $developmentMode;
@@ -670,8 +672,8 @@ abstract class MetricsLogger extends SharedMemoryOp {
      *     @see: $timingMetrics.
      *   - count, the number of times this key has been recorded.
      *
-     * @param   $key    Key to increment
-     * @param   $value  Time event took in ms
+     * @param   $key        Key to update metrics for
+     * @param   $timeTaken  Duration for the event in milliseconds
      */
     public function timing($key, $timeTaken) {
         if ($this->readOnly) {
