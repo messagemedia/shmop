@@ -433,10 +433,11 @@ abstract class MetricsLogger extends SharedMemoryOp
         $instance = $this->metrics[$name]['pcp_instance'];
         $head = $this->getHead();
 
-        $headStructureLength  = Packing::getPackLength($this->getHeadStructure());
+        $startIndexOffset = Packing::getPackLength($this->getHeadStructure()); // Indexes are after the head structure.
+        $endIndexOffset = $head['nextIndexOffset']; // nextIndexOffset gives the tail, just past the final index item.
         $indexStructureLength = Packing::getPackLength($this->indexStructure);
 
-        for ($indexOffset = $headStructureLength; $indexOffset < $head['nextIndexOffset']; $indexOffset += $indexStructureLength) {
+        for ($indexOffset = $startIndexOffset; $indexOffset < $endIndexOffset; $indexOffset += $indexStructureLength) {
             $data = unpack(
                 Packing::getPackFormat('index', $this->indexStructure, true),
                 shmop_read($this->shmIndexId, $indexOffset, $indexStructureLength)
