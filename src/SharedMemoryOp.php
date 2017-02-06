@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * @file
  * @copyright 2013 MessageMedia Group
  * @license https://www.apache.org/licenses/LICENSE-2.0
  * @see https://messagemedia.github.io/
@@ -129,7 +130,7 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface {
     protected $readOnly        = false;              ///< Open shared memory segments as read only.
 
     /// Structure of the version stored in the head of the index segment.
-    ///  @see http://php.net/manual/en/function.pack.php.
+    /// @see http://php.net/manual/en/function.pack.php.
     protected $versionStructure = array(
         'version' => Packing::UINT32,    ///< Version stored as unsigned long.
     );

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * @file
  * @copyright 2013 MessageMedia Group
  * @license https://www.apache.org/licenses/LICENSE-2.0
  * @see https://messagemedia.github.io/
@@ -29,7 +30,6 @@ namespace MessageMedia\shmop;
  */
 class Packing {
 
-    /// @todo Add other types listed on http://php.net/manual/en/function.pack.php
     const UINT16 = 'S'; ///< unsigned short (always 16 bit, machine byte order)
     const INT16  = 's'; ///< signed short (always 16 bit, machine byte order)
     const UINT32 = 'L'; ///< unsigned long (always 32 bit, machine byte order)
