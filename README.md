@@ -8,15 +8,15 @@ This library provides utility classes for manipulating shared memory segments in
 
 ```json
 {
+    "require": {
+        "MessageMedia/shmop": "dev-master"
+    },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/messagemedia/shmop"
         }
-    ],
-    "require": {
-        "MessageMedia/shmop": "*"
-    }
+    ]
 }
 ```
 
