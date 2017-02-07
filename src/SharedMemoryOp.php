@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2013 MessageMedia Group
+ * Copyright 2013,2017 MessageMedia Group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  * @file
- * @copyright 2013 MessageMedia Group
+ * @copyright 2013,2017 MessageMedia Group
  * @license https://www.apache.org/licenses/LICENSE-2.0
  * @see https://messagemedia.github.io/
  */
