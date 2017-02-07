@@ -176,13 +176,13 @@ abstract class MetricsLogger extends SharedMemoryOp
     const METRIC_TYPE_COUNTER = 'counter'; ///< monotonic counter.
     const METRIC_TYPE_TIMER   = 'timer';   ///< interval timer.
 
-    ///< Array of metrics to be captured by this class.
+    /// Array of metrics to be captured by this class.
     protected $metrics = array();
 
-    ///< Array of value names and with their offset and pack type. Can also include flags and length of each value.
+    /// Array of value names and with their offset and pack type. Can also include flags and length of each value.
     protected $indexData = array();
 
-    ///< Flag to enable development mode, which turns on metric validation, and duplicate metric warnings.
+    /// Flag to enable development mode, which turns on metric validation, and duplicate metric warnings.
     protected $developmentMode = false;
 
     /// Array or timing metrics to collect.
