@@ -577,7 +577,8 @@ abstract class MetricsLogger extends SharedMemoryOp
         // All metrics should be numeric.
         if (is_numeric($value)) {
             // Ensure integers don't exceed their limit and convert to doubles.
-            if ($this->metrics[$name]['type'] == Packing::UINT32 && ($value >= min(PHP_INT_MAX, 4294967295) || !is_int($value))) {
+            $maxUint32Value = min(PHP_INT_MAX, 4294967295); // The former applies on 32-bit systems.
+            if ($this->metrics[$name]['type'] == Packing::UINT32 && ($value >= $maxUint32Value || !is_int($value))) {
                 $this->logger->notice('Wrapping value for ' . $name);
                 $value = 0;
             }
