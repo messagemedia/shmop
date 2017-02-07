@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['_24developmentmode',['$developmentMode',['../classMessageMedia_1_1shmop_1_1metrics_1_1MetricsLogger.html#a0805d7e0e5b1241a3e98975f5fe0abe9',1,'MessageMedia::shmop::metrics::MetricsLogger']]],
+  ['_24haserror',['$hasError',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#aa0651379f6bbeb81af861887f942942e',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24identifier',['$identifier',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a9f8b4dfcf0544927d0ea941de4180ba9',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24indexdata',['$indexData',['../classMessageMedia_1_1shmop_1_1metrics_1_1MetricsLogger.html#a9616581551a7ebea9a22e1d4aba293b8',1,'MessageMedia::shmop::metrics::MetricsLogger']]],
+  ['_24indexstructure',['$indexStructure',['../classMessageMedia_1_1shmop_1_1metrics_1_1MetricsLogger.html#adcacfec014a42493ca02e5b834646998',1,'MessageMedia::shmop::metrics::MetricsLogger']]],
+  ['_24ipckeyfile',['$ipcKeyFile',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a40f3d151f0cbdc48478240a40caf7ddc',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24metrics',['$metrics',['../classMessageMedia_1_1shmop_1_1metrics_1_1MetricsLogger.html#a9ad2f979815bee215544cf739b5f80c1',1,'MessageMedia::shmop::metrics::MetricsLogger']]],
+  ['_24name',['$name',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#af46b1a831190aed3fb5fc372de55b56f',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24offsetsstructure',['$offsetsStructure',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a9f686dd9edce30ea188f69489a0a5764',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24readonly',['$readOnly',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a9a114fa3971b7700246999c7c4152b9b',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24shmdataid',['$shmDataId',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a0e14fd773dd07f90e851e5fa3ad19c27',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24shmdatapages',['$shmDataPages',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a59c005b8a4e0bc6dbb5ae236a66b7e3a',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24shmindexid',['$shmIndexId',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a848853ba8bd5c53dae6e9bb9cfc5f2ad',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24shmindexpages',['$shmIndexPages',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#acda9178e320237d34d6304aa264427cd',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24timingmetrics',['$timingMetrics',['../classMessageMedia_1_1shmop_1_1metrics_1_1MetricsLogger.html#a05fbd0863299422a4f75f934e90c9665',1,'MessageMedia::shmop::metrics::MetricsLogger']]],
+  ['_24version',['$version',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a662bef2e443b622b49fdfe187744c914',1,'MessageMedia::shmop::SharedMemoryOp']]],
+  ['_24versionstructure',['$versionStructure',['../classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a8b9da8603edb684c107435d2eb4a3e9b',1,'MessageMedia::shmop::SharedMemoryOp']]]
+];

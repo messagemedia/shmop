@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classMessageMedia_1_1shmop_1_1SharedMemoryOp.html" title="Provides structure for reading and writing to shared memory segments using PHPs shmop_* functions..." alt="" coords="203,5,356,47"/>
+<area shape="rect" id="node3" href="$classMessageMedia_1_1shmop_1_1metrics_1_1MetricsLogger.html" title="Provides a structure for implementing counter and timer style application level metrics within PHP..." alt="" coords="404,5,559,47"/>
+</map>
