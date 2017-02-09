@@ -206,7 +206,7 @@ class MetricsLoggerTest extends TestCase {
         $this->assertTrue($validateMetricConfig->invokeArgs($metricsLogger, array(0,  array('type' => MetricsLogger::METRIC_TYPE_COUNTER, 'pcp_cluster' => 0,     'name' => 'name', 'pcp_item' => 1,     'pcp_instance' => 1),           &$pcpHash)));
 
         $pcpHash = array();
-        // Inalid pcp_item
+        // Invalid pcp_item
         $this->assertFalse($validateMetricConfig->invokeArgs($metricsLogger, array(0, array('type' => MetricsLogger::METRIC_TYPE_COUNTER, 'pcp_cluster' => 0,     'name' => 'name', 'pcp_item' => 65536, 'pcp_instance' => 1),           &$pcpHash)));
         $this->assertFalse($validateMetricConfig->invokeArgs($metricsLogger, array(0, array('type' => MetricsLogger::METRIC_TYPE_COUNTER, 'pcp_cluster' => 0,     'name' => 'name', 'pcp_item' => -1,    'pcp_instance' => 1),           &$pcpHash)));
         // Valid pcp_item
@@ -214,7 +214,7 @@ class MetricsLoggerTest extends TestCase {
         $this->assertTrue($validateMetricConfig->invokeArgs($metricsLogger, array(0,  array('type' => MetricsLogger::METRIC_TYPE_COUNTER, 'pcp_cluster' => 0,     'name' => 'name', 'pcp_item' => 0,     'pcp_instance' => 1),           &$pcpHash)));
 
         $pcpHash = array();
-        // Inalid pcp_instance
+        // Invalid pcp_instance
         $this->assertFalse($validateMetricConfig->invokeArgs($metricsLogger, array(0, array('type' => MetricsLogger::METRIC_TYPE_COUNTER, 'pcp_cluster' => 0,     'name' => 'name', 'pcp_item' => 0,     'pcp_instance' => 2147483648),  &$pcpHash)));
         $this->assertFalse($validateMetricConfig->invokeArgs($metricsLogger, array(0, array('type' => MetricsLogger::METRIC_TYPE_COUNTER, 'pcp_cluster' => 0,     'name' => 'name', 'pcp_item' => 0,     'pcp_instance' => -2147483649), &$pcpHash)));
         // Valid pcp_instance

@@ -109,7 +109,7 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface
     const MODE_READ_ONLY  = 'r';                     ///< Open shared memory segments for reading only.
     const MODE_READ_WRITE = 'w';                     ///< Open shared memory segments for reading and writing.
 
-    const IPC_KEY_FILE_PATH          = '/var/tmp/';  ///< Path to use when creating System V IPC key.
+    const IPC_KEY_FILE_PATH = '/var/tmp/';           ///< Path to use when creating System V IPC key.
                                                      ///  Must match the corresponding PMDA implementation.
     const PAGE_SIZE = 4096;                          ///< Page size used on most MessageMedia production servers.
     const LOCK_WAIT_TIMEOUT = 100;                   ///< Default maximum time, in milliseconds, to wait for a lock.
@@ -368,7 +368,7 @@ abstract class SharedMemoryOp implements \Psr\Log\LoggerAwareInterface
      *
      * @return  $identifier property.
      */
-    public function getidentifier()
+    public function getIdentifier()
     {
         return $this->identifier;
     }
