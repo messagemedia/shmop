@@ -23,7 +23,6 @@
 namespace MessageMedia\shmop\metrics;
 
 use MessageMedia\shmop\Packing;
-use MessageMedia\shmop\SharedMemoryOp;
 
 /**
  * @brief  Provides a structure for implementing counter and timer style application
@@ -168,7 +167,7 @@ use MessageMedia\shmop\SharedMemoryOp;
  * @see     api/xml/SoapXmlMetricsLogger.class.php, an implementation of MetricsLogger.
  * @see     http://oss.sgi.com/projects/pcp/
  */
-abstract class MetricsLogger extends SharedMemoryOp
+abstract class MetricsLogger extends \MessageMedia\shmop\SharedMemoryOp
 {
 
     const INSTANCE_DOMAIN_NULL = -1; ///< Value to use as the pcp_instance when a metric has no instance domain.
