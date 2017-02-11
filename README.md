@@ -1,5 +1,8 @@
 # shmop
 
+[![Build Status](https://travis-ci.org/messagemedia/shmop.svg?branch=master)](https://travis-ci.org/messagemedia/shmop)
+[![codecov](https://codecov.io/gh/messagemedia/shmop/branch/master/graph/badge.svg)](https://codecov.io/gh/messagemedia/shmop)
+
 This library provides utility classes for manipulating shared memory segments in PHP.
 
 ### Installation
