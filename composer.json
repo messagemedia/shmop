@@ -4,6 +4,8 @@
     "homepage": "https://github.com/messagemedia/shmop",
     "license": "Apache-2.0",
     "require": {
+        "ext-shmop": "*",
+        "php": ">=5.4.0",
         "psr/log": "*"
     },
     "require-dev": {

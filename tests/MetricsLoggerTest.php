@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace MessageMedia\shmop\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -41,6 +39,9 @@ class InstrumentedTestMetricsLogger extends TestMetricsLogger {
      }
 }
 
+/**
+ * @requires extension shmop
+ */
 class MetricsLoggerTest extends TestCase {
 
     public $expectedIpcKeyFile = '/var/tmp/unittest.metrics';
@@ -60,7 +61,7 @@ class MetricsLoggerTest extends TestCase {
 
     }
 
-    public function setup() {
+    public function setUp() {
         parent::setUp();
         $this->cleanUp();
     }
