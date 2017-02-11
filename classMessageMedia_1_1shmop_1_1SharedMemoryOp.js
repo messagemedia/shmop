@@ -6,7 +6,7 @@ var classMessageMedia_1_1shmop_1_1SharedMemoryOp =
     [ "deleteSharedMemory", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#ade0888a95912c34dc46ae3920175312f", null ],
     [ "getHead", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a495801c80c6c22770b1cfba0345cc1b9", null ],
     [ "getHeadStructure", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a99d4030b744dba40e4e857125a30ba6f", null ],
-    [ "getidentifier", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#aeb85506a3a08b9e2eca3acd2fbba5cac", null ],
+    [ "getIdentifier", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#a9dd51da5107abd26d06ab15a4d915299", null ],
     [ "getIpcKeyFile", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#aedd7d6cab3ed9c5007687fd419a48bd2", null ],
     [ "getLock", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#ada1bd3c706e07ad3cfb58d1177065017", null ],
     [ "getName", "classMessageMedia_1_1shmop_1_1SharedMemoryOp.html#acf854871dda21a6a950f85119eadc624", null ],
