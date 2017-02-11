@@ -1,0 +1,32 @@
+language: php
+dist: trusty
+sudo: false
+
+php:
+    - 5.4
+    - 5.5
+    - 5.6
+    # @todo Generalise this to just '7.0' when Travis CI no longer defaults to 7.0.7,
+    #       because PHP 7.0.7 has an autload bug on Travis CI's Trusty builds.
+    - 7.0.14
+    - 7.1
+    - hhvm-3.15
+    - hhvm-nightly
+
+matrix:
+    allow_failures:
+        - php: hhvm-nightly
+
+before_script:
+    # Allow Composer use non-locked dependencies for older PHP versions.
+    - composer install || ([ $? == 2 ] && composer update)
+
+script:
+    - find src/ tests/ -name *.php -print0 | xargs -0n1 php -l
+    - ./vendor/bin/phpcs
+    # Travis CI provides phpdbg for PHP7, so use it (in preference to Xdebug) for PHPUnit.
+    - '[[ "$TRAVIS_PHP_VERSION" != 7.* ]] || export "RUNNER=phpdbg -rr"'
+    - $RUNNER ./vendor/bin/phpunit --coverage-clover=coverage.xml
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
