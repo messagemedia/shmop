@@ -9,6 +9,7 @@
         "psr/log": "*"
     },
     "require-dev": {
+        "codacy/coverage": "dev-master",
         "phpmd/phpmd" : "*",
         "phpunit/phpunit": "*",
         "squizlabs/php_codesniffer": "*"

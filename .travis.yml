@@ -13,6 +13,10 @@ php:
     - hhvm-3.15
     - hhvm-nightly
 
+env:
+    global:
+        secure: "KR4qXWq6TE5jUQ+TN5Grk6l9FOD4xd4yqh1qyJFVqcCUMbc3qsheJrHCiTOv70+f3o9+gwi2C+7qwYvmoI5T/Gb/biAiCSxorD5b6P2u63kBJD8ui+CW1feiSxvReg5xiPHIvOG62RUf0MjZLfJD+OkBRUxhSDZh9CdOcppTf7Fm9QAV1qQro2KTcdpNtPaOkv4vyTfeGZZtF2ycue8mf9bl8khhqI6oQ7aSouBYIRozqW5zO9lwTBp4GtezPgHWTUEzl9eP2xMx0ukurWa85DfRwfFGgeKqMmrRJDGpFj0xu4EEhRXZQesO+ABpN9+A9Ckd+m/rTZ5JGqD2Q4ctZUjMhEkOCziw0hgAJvCY8lj0E9ZWHFN5WGZvgsGj9L3ljVlEielHcrenfByJGOpyHILuqp2JCqLLlwtG/CEqE38OHcqYftsziWBkr+f1ZjYjz7rnOog/iuKpBSXHRCMMPGMrqEXggr4mVJpAxKkIqKyVcr8Ye/kkUXyYf+n+3X/nXUTHi5fsV6vBlxkzypZtJayEEHiK4FVclDMcWcTfwlluCaD+3sMC/UccwJKHZ+Fzex8fQES9FMvTrPE5HJTPpsnydPHkTDGCsX3KhBHp/BnLE+BScFBX0qoBIApPPWaRJAlCqp96sPpZjlZfXS2vuJQGWRpfZTxoSWZ2U2uFpWA="
+
 matrix:
     allow_failures:
         - php: hhvm-nightly
@@ -30,3 +34,4 @@ script:
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
+    - ./vendor/bin/codacycoverage clover coverage.xml
