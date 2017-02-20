@@ -1,6 +1,7 @@
 # shmop
 
 [![Build Status](https://travis-ci.org/messagemedia/shmop.svg?branch=master)](https://travis-ci.org/messagemedia/shmop)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/98a92292f19b4fa18b5423b2781aceeb)](https://www.codacy.com/app/MessageMedia/shmop?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=messagemedia/shmop&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/messagemedia/shmop/branch/master/graph/badge.svg)](https://codecov.io/gh/messagemedia/shmop)
 [![Dependency Status](https://gemnasium.com/badges/github.com/messagemedia/shmop.svg)](https://gemnasium.com/github.com/messagemedia/shmop)
 
