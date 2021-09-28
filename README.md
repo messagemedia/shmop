@@ -29,7 +29,7 @@ This library provides utility classes for manipulating shared memory segments in
 
 See [messagemedia.github.io/shmop](https://messagemedia.github.io/shmop)
 
-### Miscellaneous
+#### Miscellaneous
 
 This project meets [PSR-1], [PSR-2], [PSR-3] and [PSR-4].
 
